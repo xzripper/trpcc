@@ -1,3 +1,4 @@
+huge update coming
 <h1 align="center"><img src="icon.png"><br>TRPCC</h1>
 <h3 align="center">Telegram Remote PC Control. [ALPHA V1.0].</h3>
 <p align="center">Deadly tool for remote PC controlling (RAT).</p><br><br><p align="center"><b>⚠ WARNING ⚠<br>I do not accept responsibility for any use of this tool.</b></p><br><br>
