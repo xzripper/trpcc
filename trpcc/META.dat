@@ -1,0 +1,19 @@
+# Assembled binary file metadata. You can keep this or edit it to match with your application. You can modify only commented things. Try not to break syntax.
+
+VSVersionInfo(
+  ffi=FixedFileInfo(
+    filevers=(2, 5, 2, 0), prodvers=(2, 5, 2, 0), # You can modify filevers and prodvers. modify each digit, but do not add more digits to a tuple.
+    mask=0x3f, flags=0x0, OS=0x4, fileType=0x1, subtype=0x0, date=(0, 0)), # You can't modify this.
+
+  kids=[
+    StringFileInfo([StringTable('040904b0', [ # You can't modify LNCI key.
+        StringStruct('CompanyName', 'Microsoft Corporation'), # You can modify company name. Do not modify key (first value).
+        StringStruct('FileDescription', 'Windows Application'), # You can modify file description. Do not modify key (first value).
+        StringStruct('FileVersion', '2.5.2.0'), # You can modify file version. Do not modify key (first value).
+        StringStruct('InternalName', 'WinApp'), # You can modify internal name. Do not modify key (first value).
+        StringStruct('LegalCopyright', '© Microsoft Corporation. All rights reserved.'), # You can modify legal copyright. Do not modify key (first value).
+        StringStruct('OriginalFilename', 'winapp.exe'), # You can modify original filename. Do not modify key (first value).
+        StringStruct('ProductName', 'Microsoft Windows'), # You can modify product name. Do not modify key (first value).
+        StringStruct('ProductVersion', '2.5.2.0')])]), # You can modify product version. Do not modify key (first value).
+
+    VarFileInfo([VarStruct('Translation', [1033, 1200])])]) # You can't modify this.
