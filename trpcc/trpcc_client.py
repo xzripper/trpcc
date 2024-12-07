@@ -9,7 +9,7 @@ from aiogram.filters.command import Command
 
 from aiogram.exceptions import TelegramUnauthorizedError
 
-from asyncio import WindowsSelectorEventLoopPolicy, run, set_event_loop_policy
+from asyncio import WindowsSelectorEventLoopPolicy, set_event_loop_policy, run
 
 from functools import wraps
 
